@@ -25,7 +25,7 @@ public class UserDao {
 		}
 		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream(path);
+			out = new FileOutputStream(file);
 			ObjectOutputStream oop = new ObjectOutputStream(out);
 			oop.writeObject(userList);
 			oop.close();
@@ -51,12 +51,12 @@ public class UserDao {
 		}
 		ObjectInputStream ois=null;
 		try {
-			ois=new ObjectInputStream(new FileInputStream(userPath));
+			ois=new ObjectInputStream(new FileInputStream(file));
 			List<User>userList = (List<User>) ois.readObject();
 			if (userList.size()!=0){return userList;}
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return new ArrayList<>();
 	}
 }

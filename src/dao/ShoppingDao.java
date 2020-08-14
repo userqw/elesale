@@ -21,10 +21,9 @@ public class ShoppingDao {
 		FileOutputStream out = null;
 		try {
 
-			ObjectOutputStream oop = new ObjectOutputStream(new FileOutputStream(path));
+			ObjectOutputStream oop = new ObjectOutputStream(new FileOutputStream(file));
 			oop.writeObject(goodsList);
 			oop.close();
-			out.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -43,7 +42,7 @@ public class ShoppingDao {
 		}
 		ObjectInputStream ois =null;
 		try {
-			ois= new ObjectInputStream(new FileInputStream(path));
+			ois= new ObjectInputStream(new FileInputStream(file));
 			List<Goods> goodsList = (List<Goods>) ois.readObject();
 
 			if (goodsList.size()!=0) {
@@ -60,7 +59,7 @@ public class ShoppingDao {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 
 	}
 

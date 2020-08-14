@@ -46,6 +46,7 @@ public class ShoppingServlet {
         System.out.println("用户" + user.getName() + "您的购物车商品如下：");
         for (Goods goods : goodsList) {
             System.out.println("\n\t\t" + goods.getName() + " " + goods.getPrice() + " " + goods.getCount());
+            System.out.println("jhjjj");
         }
 
     }
@@ -66,6 +67,7 @@ public class ShoppingServlet {
                     if (shopGoods[i - 1].equals(goods.getName())) {
                         goods.setCount(goods.getCount() + 1);
                         find = true;
+
                     }
                 }
                 if (!find) {
@@ -73,12 +75,11 @@ public class ShoppingServlet {
                     goods.setCount(1);
                     goods.setName(shopGoods[i - 1]);
                     goods.setPrice(shopGoodsPrices[i - 1]);
+                    goodsList.add(goods);
                 }
 
             }
-
             shoppingdao.save(goodsList, Goods_PATH);
-
             System.out.println("添加购物车成功");
 
         }
