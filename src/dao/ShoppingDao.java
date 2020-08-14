@@ -1,10 +1,6 @@
 package dao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +9,20 @@ import vo.User;
 
 public class ShoppingDao {
 
-	public void save(Goods goods, String path) {
+	public void save(List<Goods> goodsList, String path) {
+		File file = new File(path);
+		if (!file.exists()){
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		FileOutputStream out = null;
 		try {
-			out = new FileOutputStream(path);
-			ObjectOutputStream oop = new ObjectOutputStream(out);
-			oop.writeObject(goods);
+
+			ObjectOutputStream oop = new ObjectOutputStream(new FileOutputStream(path));
+			oop.writeObject(goodsList);
 			oop.close();
 			out.close();
 		} catch (Exception e) {
@@ -26,52 +30,37 @@ public class ShoppingDao {
 		}
 	}
 
-	// 判断注册用户名是否重复
-	public Goods findName(String name, String path) {
-		List<String> filepaths = new ArrayList<String>();
-		File files = new File(path);
-		File[] listFiles = files.listFiles();
-		for (File file : listFiles) {
-			filepaths.add(file.getAbsolutePath());
-		}
 
-		for (int i = 0; i < filepaths.size(); i++) {
-			FileInputStream in = null;
-			path = filepaths.get(i);
+
+	public List<Goods> showAll(String path) {
+		File file = new File(path);
+		if (!file.exists()){
 			try {
-				in = new FileInputStream(path);
-				ObjectInputStream ois = new ObjectInputStream(in);
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		ObjectInputStream ois =null;
+		try {
+			ois= new ObjectInputStream(new FileInputStream(path));
+			List<Goods> goodsList = (List<Goods>) ois.readObject();
 
-				Goods goods = (Goods) ois.readObject();
-				if (name.equals(goods.getName())) {
-					return goods;
-				}
+			if (goodsList.size()!=0) {
+
+				return goodsList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			try {
 				ois.close();
-				in.close();
-			} catch (Exception e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		return new Goods();
-
-	}
-
-	public Goods showAll(String path) {
-
-		FileInputStream in = null;
-		try {
-			in = new FileInputStream(path);
-			ObjectInputStream ois = new ObjectInputStream(in);
-			Goods goods = (Goods) ois.readObject();
-			ois.close();
-			in.close();
-			return goods;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return new Goods();
+		return null;
 
 	}
 

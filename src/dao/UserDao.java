@@ -1,10 +1,6 @@
 package dao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,42 +8,26 @@ import vo.User;
 
 public class UserDao {
 
-	// 判断注册用户名是否重复
-	public boolean findName(String name, String path) {
-		List<String> filepaths = new ArrayList<String>();
-		File files = new File(path);
-		File[] listFiles = files.listFiles();
-		for (File file : listFiles) {
-			filepaths.add(file.getAbsolutePath());
-		}
-		
-		for (int i = 0; i < filepaths.size(); i++) {
-			FileInputStream in = null;
-			path=filepaths.get(i);
+
+	/**
+	 * 保存用户
+	 * @param userList
+	 * @param path
+	 */
+	public void save(List<User> userList,String path) {
+		File file = new File(path);
+		if (!file.exists()){
 			try {
-				in = new FileInputStream(path);
-				ObjectInputStream ois = new ObjectInputStream(in);
-				
-				User user=(User) ois.readObject();
-				if(name.equals(user.getName())) {return true;}
-				ois.close();
-				in.close();
-			} catch (Exception e) {
+				file.createNewFile();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		return false;
-
-	}
-
-	public void save(User user,String path) {
 		FileOutputStream out = null;
 		try {
 			out = new FileOutputStream(path);
 			ObjectOutputStream oop = new ObjectOutputStream(out);
-			oop.writeObject(user);
+			oop.writeObject(userList);
 			oop.close();
 			out.close();
 		} catch (Exception e) {
@@ -55,32 +35,28 @@ public class UserDao {
 		}
 	}
 
-	public User findByNamePassword(String name,String password,String path) {
-		List<String> filepaths = new ArrayList<String>();
-		File files = new File(path);
-		File[] listFiles = files.listFiles();
-		for (File file : listFiles) {
-			filepaths.add(file.getAbsolutePath());
-		}
-		
-		for (int i = 0; i < filepaths.size(); i++) {
-			FileInputStream in = null;
-			path=filepaths.get(i);
+
+
+
+	//查询所有用户
+	public List<User> findAll(String userPath) {
+		File file = new File(userPath);
+
+		if (!file.exists()){
 			try {
-				in = new FileInputStream(path);
-				ObjectInputStream ois = new ObjectInputStream(in);
-				
-				User user=(User) ois.readObject();
-				if(name.equals(user.getName())&&password.equals(user.getPassword())) {return user;}
-				ois.close();
-				in.close();
-			} catch (Exception e) {
+				file.createNewFile();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		return new User();		
+		ObjectInputStream ois=null;
+		try {
+			ois=new ObjectInputStream(new FileInputStream(userPath));
+			List<User>userList = (List<User>) ois.readObject();
+			if (userList.size()!=0){return userList;}
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-
 }

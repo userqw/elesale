@@ -1,6 +1,6 @@
 import servlet.MainServlet;
 
-public class Start {
+public class StartSys {
 	public static void main(String[] args) {
 		MainServlet shoppingServlet = new MainServlet();
 		shoppingServlet.run();
