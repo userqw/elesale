@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import dao.ShoppingDao;
+import javafx.beans.binding.DoubleExpression;
 import view.MainView;
 import vo.Goods;
 import vo.User;
@@ -34,19 +35,39 @@ public class ShoppingServlet {
                 // 查看购物车
                 showShoppingCar(user);
             } else if (i == 3) {
-                // 结算
+                 count();
             } else if (i == 4) {
                 // 返回
-                break;
+                return;
             }
+        }
+    }
+
+    private void count() {
+        double money=0;
+        double total=0;
+        for (Goods goods : goodsList) {
+            money=goods.getCount()*goods.getPrice();
+            System.out.printf("商品：%s,单价%.1f元,共%s件",goods.getName(),goods.getPrice(),goods.getCount()+"\n");
+            total+=money;
+        }
+        System.out.printf("合计：%.1f元",total);
+        System.out.println("是否结算(1是，0否)");
+        int i = in.nextInt();
+        if (i==1){
+            goodsList.removeAll(goodsList);
+            shoppingdao.save(goodsList,Goods_PATH);
+            System.out.println("结算成功");
+        }else if (i==0){
+            return;
         }
     }
 
     private void showShoppingCar(User user) {
         System.out.println("用户" + user.getName() + "您的购物车商品如下：");
+        System.out.println("名称\t单价\t数量");
         for (Goods goods : goodsList) {
-            System.out.println("\n\t\t" + goods.getName() + " " + goods.getPrice() + " " + goods.getCount());
-            System.out.println("jhjjj");
+            System.out.println("\n" + goods.getName() + "\t" + goods.getPrice() + "\t\t" + goods.getCount());
         }
 
     }
@@ -61,23 +82,22 @@ public class ShoppingServlet {
             if (i == 0) {
                 break;
             }
-            if (i > 0 && i <= goodsList.size()) {
-                boolean find = false;
-                for (Goods goods : goodsList) {
-                    if (shopGoods[i - 1].equals(goods.getName())) {
-                        goods.setCount(goods.getCount() + 1);
-                        find = true;
+            boolean find = false;
+            for (Goods goods : goodsList) {
+                if (shopGoods[i - 1].equals(goods.getName())) {
+                    goods.setCount(goods.getCount() + 1);
+                    find = true;
 
-                    }
-                }
-                if (!find) {
-                    Goods goods = new Goods();
-                    goods.setCount(1);
-                    goods.setName(shopGoods[i - 1]);
-                    goods.setPrice(shopGoodsPrices[i - 1]);
-                    goodsList.add(goods);
                 }
 
+
+            }
+            if (!find) {
+                Goods goods= new Goods();
+                goods.setCount(1);
+                goods.setName(shopGoods[i - 1]);
+                goods.setPrice(shopGoodsPrices[i - 1]);
+                goodsList.add(goods);
             }
             shoppingdao.save(goodsList, Goods_PATH);
             System.out.println("添加购物车成功");
